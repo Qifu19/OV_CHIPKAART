@@ -1,4 +1,4 @@
-package com.data.domein;
+package com.data.domain;
 import java.sql.Date;
 
 public class Reiziger {

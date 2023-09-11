@@ -3,9 +3,9 @@ package com.data;
 import java.sql.*;
 import java.util.List;
 
-import com.data.domein.Reiziger;
-import com.data.domein.ReizigerDAO;
-import com.data.domein.ReizigerDAOPsql;
+import com.data.domain.Reiziger;
+import com.data.persistency.ReizigerDAO;
+import com.data.persistency.ReizigerDAOPsql;
 
 public class App {
     public static void main(String[] args) {

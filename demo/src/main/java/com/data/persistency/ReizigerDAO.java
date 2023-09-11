@@ -1,6 +1,8 @@
-package com.data.domein;
+package com.data.persistency;
 
 import java.util.List;
+
+import com.data.domain.Reiziger;
 
 public interface ReizigerDAO {
     public boolean save(Reiziger reiziger);
