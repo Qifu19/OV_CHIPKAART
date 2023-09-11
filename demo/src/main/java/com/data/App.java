@@ -12,7 +12,6 @@ public class App {
         try {
             testReizigerDAO(new ReizigerDAOPsql());
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -40,13 +39,16 @@ public class App {
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
+        for (Reiziger r : reizigers) {
+            System.out.println(r);
+        }
         System.out.println(reizigers.size() + " reizigers\n");
 
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
 
         // Update de reiziger
         System.out.println("[Test] ReizigerDAO.update() geeft de volgende reizigers:");
-        sietske.setAchternaam("Boers");
+        sietske.setAchternaam("Boersma");
         rdao.update(sietske);
         reizigers = rdao.findAll();
         for (Reiziger r : reizigers) {
@@ -65,6 +67,12 @@ public class App {
         System.out.println("[Test] ReizigerDAO.findById() geeft de volgende reizigers:");
         for (Reiziger r : reizigers) {
             System.out.println(rdao.findById(r.getReiziger_id()));
+        }
+        // Find an specific ID
+        if (rdao.findById(3) == null) {
+            System.out.println("Reiziger met ID 3 bestaat niet");
+        } else {
+            System.out.println(rdao.findById(3));
         }
 
         // Find by GBdatum
