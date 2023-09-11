@@ -26,7 +26,6 @@ public class AdresDAOPsql implements AdresDAO{
 
     @Override
     public List<Adres> findAll() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
     
