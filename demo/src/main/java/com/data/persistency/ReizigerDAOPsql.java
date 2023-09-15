@@ -13,11 +13,17 @@ import com.data.domain.Reiziger;
 
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection conn;
+    private AdresDAO adao;
 
     public ReizigerDAOPsql() throws SQLException {
         this.conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/OV_Chipkaart", "postgres", "Qianfu19#2004");
     }
 
+    public void setAdao(AdresDAO adao) {
+        this.adao = adao;
+    }
+
+    @Override
     public boolean save(Reiziger reiziger) {
         String achternaam = reiziger.getAchternaam();
         String tussenvoegsel = reiziger.getTussenvoegsel();
@@ -41,6 +47,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
     }
 
+    @Override
     public boolean update(Reiziger reiziger) {
         try {
             PreparedStatement myStmt = conn.prepareStatement("UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
@@ -58,6 +65,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
     }
 
+    @Override
     public boolean delete(Reiziger reiziger) {
         try {
             PreparedStatement myStmt = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
@@ -71,6 +79,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
     }
 
+    @Override
     public Reiziger findById(int id) {
         try {
             PreparedStatement myStmt = conn.prepareStatement("SELECT * FROM reiziger WHERE reiziger_id = ?");
@@ -78,6 +87,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             ResultSet myRs = myStmt.executeQuery();
             while (myRs.next()) {
                 Reiziger reiziger = new Reiziger(Integer.parseInt(myRs.getString("reiziger_id")), myRs.getString("voorletters"), myRs.getString("tussenvoegsel"), myRs.getString("achternaam"), java.sql.Date.valueOf(myRs.getString("geboortedatum")));
+                reiziger.setAdres(adao.findByReiziger(reiziger));
                 return reiziger;
             }
         } catch (SQLException e) {
@@ -85,20 +95,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
         return null;
     }
-    // public Reiziger findById(int id) {
-    //     try {
-    //         Statement myStmt = conn.createStatement();
-    //         ResultSet myRs = myStmt.executeQuery("SELECT * FROM reiziger WHERE reiziger_id = " + id);
-    //         while (myRs.next()) {
-    //             Reiziger reiziger = new Reiziger(Integer.parseInt(myRs.getString("reiziger_id")), myRs.getString("voorletters"), myRs.getString("tussenvoegsel"), myRs.getString("achternaam"), java.sql.Date.valueOf(myRs.getString("geboortedatum")));
-    //             return reiziger;
-    //         }
-    //     } catch (Exception e) {
-    //         System.out.println(e.getMessage());
-    //     }
-    //     return null;
-    // }
 
+    @Override
     public List<Reiziger> findByGbdatum(String datum) {
         List<Reiziger> reizigers = new ArrayList<Reiziger>();
         try {
@@ -107,6 +105,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             ResultSet myRs = myStmt.executeQuery();
             while (myRs.next()) {
                 Reiziger reiziger = new Reiziger(Integer.parseInt(myRs.getString("reiziger_id")), myRs.getString("voorletters"), myRs.getString("tussenvoegsel"), myRs.getString("achternaam"), java.sql.Date.valueOf(myRs.getString("geboortedatum")));
+                reiziger.setAdres(adao.findByReiziger(reiziger));
                 reizigers.add(reiziger);
             }
         } catch (Exception e) {
@@ -115,6 +114,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         return reizigers;
     }
 
+    @Override
     public List<Reiziger> findAll() {
         List<Reiziger> reizigers = new ArrayList<Reiziger>();
     
@@ -123,6 +123,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             ResultSet myRs = myStmt.executeQuery();
             while (myRs.next()) {
                 Reiziger reiziger = new Reiziger(Integer.parseInt(myRs.getString("reiziger_id")), myRs.getString("voorletters"), myRs.getString("tussenvoegsel"), myRs.getString("achternaam"), java.sql.Date.valueOf(myRs.getString("geboortedatum")));
+                reiziger.setAdres(adao.findByReiziger(reiziger));
                 reizigers.add(reiziger);
                 }
         } catch (Exception e) {

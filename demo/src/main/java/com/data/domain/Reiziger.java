@@ -7,13 +7,23 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum; 
+    private Adres adres;
     
-    public Reiziger(int reiziger_id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
+    public Reiziger (int reiziger_id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.reiziger_id = reiziger_id;
         this.voorletters = voorletters;
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
+    }
+
+    public Reiziger(int reiziger_id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum, Adres adres) {
+        this.reiziger_id = reiziger_id;
+        this.voorletters = voorletters;
+        this.tussenvoegsel = tussenvoegsel;
+        this.achternaam = achternaam;
+        this.geboortedatum = geboortedatum;
+        this.adres = adres;
     }
 
     public int getReiziger_id() {
@@ -36,6 +46,10 @@ public class Reiziger {
         return geboortedatum;
     }
 
+    public Adres getAdres() {
+        return adres;
+    }
+
     public void setReiziger_id(int reiziger_id) {
         this.reiziger_id = reiziger_id;
     }
@@ -56,20 +70,13 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
-    public String toString(){
-        if(tussenvoegsel == null) {
-            return "#" + reiziger_id + 
-            ": " + voorletters + 
-            ". " + achternaam + 
-            " (" + geboortedatum + ")";
-        }
-        else
-        return "#" + reiziger_id + 
-        ": " + voorletters + 
-        ". " + tussenvoegsel + 
-        " " + achternaam + 
-        " (" + geboortedatum + ")";
+    public void setAdres(Adres adres) {
+        this.adres = adres;
     }
 
-
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Reiziger: " + reiziger_id + " " + voorletters + " " + tussenvoegsel + " " + achternaam + " " + geboortedatum + " " + adres);
+        return sb.toString();
+    }
 }

@@ -1,11 +1,12 @@
 package com.data.persistency;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.data.domain.Reiziger;
 
 public interface ReizigerDAO {
-    public boolean save(Reiziger reiziger);
+    public boolean save(Reiziger reiziger) throws SQLException;
     public boolean update(Reiziger reiziger);
     public boolean delete(Reiziger reiziger);
     public Reiziger findById(int id);
