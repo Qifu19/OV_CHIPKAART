@@ -1,4 +1,4 @@
-package com.data.persistency;
+package com.data.persistency.interfaces;
 
 import java.sql.SQLException;
 import java.util.List;

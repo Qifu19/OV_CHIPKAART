@@ -8,8 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.data.domain.Adres;
 import com.data.domain.Reiziger;
+import com.data.persistency.interfaces.AdresDAO;
+import com.data.persistency.interfaces.ReizigerDAO;
 
 public class AdresDAOPsql implements AdresDAO{
     private Connection conn;
@@ -108,18 +111,14 @@ public class AdresDAOPsql implements AdresDAO{
     @Override
     public List<Adres> findAll() {
         List<Adres> adressen = new ArrayList<Adres>();
-        try {
-            PreparedStatement myStmt = conn.prepareStatement("SELECT * FROM adres");
-            ResultSet myRs = myStmt.executeQuery();
+        try(ResultSet myRs = conn.prepareStatement("SELECT * FROM adres").executeQuery()) {
             while (myRs.next()) {
                 Adres adres = new Adres(myRs.getInt("adres_id"), myRs.getString("postcode"), myRs.getString("huisnummer"), myRs.getString("straat"), myRs.getString("woonplaats"), myRs.getInt("reiziger_id"));
                 adressen.add(adres);
-
             }
         } catch (SQLException e) {
             System.err.println("SQLExeption: " + e.getMessage());
         }
         return adressen;
     }
-    
 }

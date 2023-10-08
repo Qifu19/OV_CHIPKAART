@@ -8,7 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import com.data.persistency.interfaces.AdresDAO;
+import com.data.persistency.interfaces.ReizigerDAO;
 import com.data.domain.Reiziger;
 
 public class ReizigerDAOPsql implements ReizigerDAO {
@@ -88,6 +89,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             while (myRs.next()) {
                 Reiziger reiziger = new Reiziger(Integer.parseInt(myRs.getString("reiziger_id")), myRs.getString("voorletters"), myRs.getString("tussenvoegsel"), myRs.getString("achternaam"), java.sql.Date.valueOf(myRs.getString("geboortedatum")));
                 reiziger.setAdres(adao.findByReiziger(reiziger));
+                myStmt.close();
                 return reiziger;
             }
         } catch (SQLException e) {
@@ -108,8 +110,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 reiziger.setAdres(adao.findByReiziger(reiziger));
                 reizigers.add(reiziger);
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQLExeption: " + e.getMessage());
         }
         return reizigers;
     }
@@ -126,8 +128,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 reiziger.setAdres(adao.findByReiziger(reiziger));
                 reizigers.add(reiziger);
                 }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQLExeption: " + e.getMessage());
         }
         return reizigers;
     }

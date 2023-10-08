@@ -1,5 +1,7 @@
 package com.data.domain;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reiziger {
     private int reiziger_id;
@@ -8,6 +10,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum; 
     private Adres adres;
+    private List<OVChipkaart> ovChipkaarten = new ArrayList<OVChipkaart>();
     
     public Reiziger (int reiziger_id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.reiziger_id = reiziger_id;
@@ -24,6 +27,15 @@ public class Reiziger {
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
         this.adres = adres;
+    }
+
+    public void addOvChipkaart(OVChipkaart ovChipkaart) {
+        ovChipkaarten.add(ovChipkaart);
+        ovChipkaart.setReiziger(this); // hier wordt de bi-directionele relatie gelegd, omdat de reiziger in de ovchipkaart wordt gezet
+    }
+
+    public List<OVChipkaart> getOvChipkaarten() {
+        return ovChipkaarten;
     }
 
     public int getReiziger_id() {
@@ -48,6 +60,10 @@ public class Reiziger {
 
     public Adres getAdres() {
         return adres;
+    }
+
+    public void setOvChipkaarten(List<OVChipkaart> ovChipkaarten) {
+        this.ovChipkaarten = ovChipkaarten;
     }
 
     public void setReiziger_id(int reiziger_id) {
