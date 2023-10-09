@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.data.domain.Adres;
 import com.data.domain.OVChipkaart;
+import com.data.domain.Product;
 import com.data.domain.Reiziger;
 import com.data.persistency.AdresDAOPsql;
 import com.data.persistency.OVChipkaartDAOPsql;
+import com.data.persistency.ProductDAOPsql;
 import com.data.persistency.interfaces.ReizigerDAO;
 import com.data.persistency.ReizigerDAOPsql;
 
@@ -17,12 +19,15 @@ public class App {
             ReizigerDAOPsql rdao = new ReizigerDAOPsql();
             AdresDAOPsql adao = new AdresDAOPsql();
             OVChipkaartDAOPsql odao = new OVChipkaartDAOPsql();
+            ProductDAOPsql pdao = new ProductDAOPsql();
             rdao.setAdao(adao);
             adao.setRdao(rdao);
             odao.setRdao(rdao);
+            pdao.setOdao(odao);
             testReizigerDAO(rdao);
             testAdresDAO(adao);
             testOVChipkaartDAO(odao);
+            testProductDAO(pdao);
             
         } catch (SQLException e) {
             System.err.println("SQLException: " + e.getMessage());
@@ -202,6 +207,63 @@ public class App {
             System.out.println(odao.findById(o.getKaart_nummer()));
         }
         System.out.println(ovchipkaarten.size() + " OVChipkaarten\n");
+    }
+
+        private static void testProductDAO(ProductDAOPsql pdao) throws SQLException {
+        System.out.println("\n---------- Test ProductDAO -------------");
+
+        // Haal alle producten op uit de database
+        List<Product> producten = pdao.findAll();
+        System.out.println("[Test] ProductDAO.findAll() geeft de volgende producten:");
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println();
+
+        // Maak een nieuw product aan en persisteer deze in de database
+        Product product = new Product(6, "Test", "Test", 1.00);
+        System.out.print("[Test] Eerst " + producten.size() + " producten, na ProductDAO.save() ");
+        pdao.save(product);
+        producten = pdao.findAll();
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println(producten.size() + " producten\n");
+
+        // Update het product
+        System.out.println("[Test] ProductDAO.update() geeft de volgende producten:");
+        product.setPrijs(2.00);
+        pdao.update(product);
+        producten = pdao.findAll();
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println("\n");
+
+        // Delete het product
+        System.out.println("[Test] ProductDAO.delete() geeft de volgende producten:");
+        pdao.delete(product);
+        producten = pdao.findAll();
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println("\n");
+
+        // Find by OVChipkaart
+        System.out.println("[Test] ProductDAO.findByOVChipkaart() geeft de volgende producten:");
+        for (Product p : producten) {
+            OVChipkaart ovchipkaart = pdao.getOdao().findById(p.getProduct_nummer());
+            System.out.println(pdao.findByOVChipkaart(ovchipkaart));
+            
+        }
+        System.out.println(producten.size() + " producten\n");
+
+        // Find by ID
+        System.out.println("[Test] ProductDAO.findById() geeft de volgende producten:");
+        for (Product p : producten) {
+            System.out.println(pdao.findById(p.getProduct_nummer()));
+        }
+        System.out.println(producten.size() + " producten\n");
 
     }
     

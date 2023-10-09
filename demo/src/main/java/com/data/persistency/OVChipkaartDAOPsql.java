@@ -11,6 +11,7 @@ import java.util.List;
 
 
 import com.data.domain.OVChipkaart;
+import com.data.domain.Product;
 import com.data.domain.Reiziger;
 import com.data.persistency.interfaces.OVChipkaartDAO;
 import com.data.persistency.interfaces.ReizigerDAO;
@@ -24,6 +25,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         this.conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/OV_Chipkaart", "postgres", "Qianfu19#2004");
     }
 
+    public ReizigerDAO getRdao() {
+        return rdao;
+    }
+
+    public void setRdao(ReizigerDAO rdao) {
+        this.rdao = rdao;
+    }
+
+    @Override
     public boolean save(OVChipkaart ovchipkaart) {
         int kaart_nummer = ovchipkaart.getKaart_nummer();
         Date geldig_tot = ovchipkaart.getGeldig_tot();
@@ -47,7 +57,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         }
     }
 
-    
+    @Override
     public boolean update(OVChipkaart ovchipkaart) {
         try{
             PreparedStatement myStmt = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
@@ -66,6 +76,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
     }
     
+    @Override
     public boolean delete(OVChipkaart ovchipkaart) {
         try{
             PreparedStatement myStmt = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE kaart_nummer = ?");
@@ -79,28 +90,26 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         }
     }
 
-    
+    @Override
     public OVChipkaart findById(int id) throws SQLException {
-        try{
-            PreparedStatement myStmt = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE kaart_nummer = ?");
-            myStmt.setInt(1, id);
-            ResultSet result = myStmt.executeQuery();
-            while(result.next()) {
-                OVChipkaart ovchipkaart = new OVChipkaart(result.getInt("kaart_nummer"), result.getDate("geldig_tot"), result.getInt("klasse"), result.getDouble("saldo"), result.getInt("reiziger_id"));
-                ovchipkaart.setReiziger(rdao.findById(result.getInt("reiziger_id")));
-                myStmt.close();
+        PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE kaart_nummer = ?");
+        preparedStatement.setInt(1, id);
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                OVChipkaart ovchipkaart = new OVChipkaart(resultSet.getInt("kaart_nummer"), resultSet.getDate("geldig_tot"), resultSet.getInt("klasse"), resultSet.getDouble("saldo"), resultSet.getInt("reiziger_id"));
+                ovchipkaart.setReiziger(rdao.findById(resultSet.getInt("reiziger_id")));
                 return ovchipkaart;
             }
-        }
-        catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
         }
         return null;
     }
 
     @Override
     public List<OVChipkaart> findByReiziger(Reiziger reiziger) throws SQLException{
-        try (ResultSet resultSet = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE reiziger_id = " + reiziger.getReiziger_id()).executeQuery()) {
+        PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ov_chipkaart WHERE reiziger_id = ?");
+        preparedStatement.setInt(1, reiziger.getReiziger_id());
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
             List<OVChipkaart> ovchipkaarten = new ArrayList<OVChipkaart>();
             while (resultSet.next()) {
                 OVChipkaart ovchipkaart = new OVChipkaart(resultSet.getInt("kaart_nummer"), resultSet.getDate("geldig_tot"), resultSet.getInt("klasse"), resultSet.getDouble("saldo"), resultSet.getInt("reiziger_id"));
@@ -108,9 +117,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 ovchipkaarten.add(ovchipkaart);
             }
             return ovchipkaarten;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return new ArrayList<OVChipkaart>();
         }
     }
 
@@ -131,12 +137,10 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         return ovchipkaarten;
     }
 
-    public ReizigerDAO getRdao() {
-        return rdao;
-    }
-
-    public void setRdao(ReizigerDAO rdao) {
-        this.rdao = rdao;
+    @Override
+    public List<OVChipkaart> findByProduct(Product product) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByProduct'");
     }
 
 }

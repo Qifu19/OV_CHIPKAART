@@ -1,6 +1,7 @@
 package com.data.domain;
 
 import java.sql.Date;
+import java.util.List;
 
 public class OVChipkaart {
     private int kaart_nummer;
@@ -9,8 +10,9 @@ public class OVChipkaart {
     private double saldo;
     private int reiziger_id;
     private Reiziger reiziger;
+    private List<Product> producten;
 
-    public OVChipkaart(int kaart_nummer, java.sql.Date geldig_tot, int klasse, double saldo, int reiziger_id) {
+    public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reiziger_id) {
         this.kaart_nummer = kaart_nummer;
         this.geldig_tot = geldig_tot;
         this.klasse = klasse;
@@ -18,13 +20,27 @@ public class OVChipkaart {
         this.reiziger_id = reiziger_id;
     }
 
-    public OVChipkaart(int kaart_nummer, java.sql.Date geldig_tot, int klasse, double saldo, int reiziger_id, Reiziger reiziger) {
+    public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reiziger_id, Reiziger reiziger) {
         this.kaart_nummer = kaart_nummer;
         this.geldig_tot = geldig_tot;
         this.klasse = klasse;
         this.saldo = saldo;
         this.reiziger_id = reiziger_id;
         this.reiziger = reiziger;
+    }
+
+    public OVChipkaart(int kaart_nummer, java.sql.Date geldig_tot, int klasse, double saldo, int reiziger_id, Reiziger reiziger, List<Product> producten) {
+        this.kaart_nummer = kaart_nummer;
+        this.geldig_tot = geldig_tot;
+        this.klasse = klasse;
+        this.saldo = saldo;
+        this.reiziger_id = reiziger_id;
+        this.reiziger = reiziger;
+        this.producten = producten;
+    }
+
+    public List<Product> getProducten() {
+        return producten;
     }
 
     public Reiziger getReiziger() {
@@ -49,6 +65,10 @@ public class OVChipkaart {
 
     public int getReiziger_id() {
         return reiziger_id;
+    }
+
+    public void setProducten(List<Product> producten) {
+        this.producten = producten;
     }
 
     public void setReiziger(Reiziger reiziger) {
