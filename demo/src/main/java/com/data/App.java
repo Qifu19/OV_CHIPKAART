@@ -10,28 +10,24 @@ import com.data.domain.Reiziger;
 import com.data.persistency.AdresDAOPsql;
 import com.data.persistency.OVChipkaartDAOPsql;
 import com.data.persistency.ProductDAOPsql;
+import com.data.persistency.interfaces.OVChipkaartDAO;
 import com.data.persistency.interfaces.ReizigerDAO;
 import com.data.persistency.ReizigerDAOPsql;
 
 public class App {
-    public static void main(String[] args) {
-        try {
-            ReizigerDAOPsql rdao = new ReizigerDAOPsql();
-            AdresDAOPsql adao = new AdresDAOPsql();
-            OVChipkaartDAOPsql odao = new OVChipkaartDAOPsql();
-            ProductDAOPsql pdao = new ProductDAOPsql();
-            rdao.setAdao(adao);
-            adao.setRdao(rdao);
-            odao.setRdao(rdao);
-            pdao.setOdao(odao);
-            testReizigerDAO(rdao);
-            testAdresDAO(adao);
-            testOVChipkaartDAO(odao);
-            testProductDAO(pdao);
-            
-        } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
-        }
+    public static void main(String[] args) throws SQLException{
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql();
+        AdresDAOPsql adao = new AdresDAOPsql();
+        OVChipkaartDAOPsql odao = new OVChipkaartDAOPsql();
+        ProductDAOPsql pdao = new ProductDAOPsql();
+        rdao.setAdao(adao);
+        adao.setRdao(rdao);
+        odao.setRdao(rdao);
+        pdao.setOdao(odao);
+        testReizigerDAO(rdao);
+        testAdresDAO(adao);
+        testOVChipkaartDAO(odao);
+        testProductDAO(pdao);
     }
         /**
      * P2. Reiziger DAO: persistentie van een klasse
@@ -230,6 +226,12 @@ public class App {
         }
         System.out.println(producten.size() + " producten\n");
 
+        // OVChipkaart ovChipkaart = new OVChipkaart(6, java.sql.Date.valueOf("2022-01-01"), 1, 1, 1);
+        // ovChipkaart.getProducten().add(product);
+        // product.getOvchipkaarten().add(ovChipkaart);
+        // System.out.println(ovChipkaart + "dit is een test");
+    
+
         // Update het product
         System.out.println("[Test] ProductDAO.update() geeft de volgende producten:");
         product.setPrijs(2.00);
@@ -251,22 +253,33 @@ public class App {
 
         // Find by OVChipkaart
         System.out.println("[Test] ProductDAO.findByOVChipkaart() geeft de volgende producten:");
-        for (Product p : producten) {
-            OVChipkaart ovchipkaart = pdao.getOdao().findById(p.getProduct_nummer());
-            System.out.println(pdao.findByOVChipkaart(ovchipkaart));
-            
-        }
-        System.out.println(producten.size() + " producten\n");
+        OVChipkaartDAO odao =  pdao.getOdao();
+        int ovchipkaart_id = odao.findAll().size() + 1;
+        OVChipkaart ovChipkaart = new OVChipkaart(ovchipkaart_id, java.sql.Date.valueOf("2022-01-01"), 1, 1, 1);
+        Product p = producten.get(0);
+            ovChipkaart.getProducten().add(p);
+            p.getOvchipkaarten().add(ovChipkaart);
+            odao.save(ovChipkaart);
+            pdao.save(p);
+            System.out.println(pdao.findByOVChipkaart(ovChipkaart));
+        System.out.println("\n");
+
+        // for (Product p : producten) {
+        //     OVChipkaartDAO odao =  pdao.getOdao();
+        //     // ovChipkaart = odao.findById(p.getProduct_nummer());
+        //     ovChipkaart.getProducten().add(p);
+        //     p.getOvchipkaarten().add(ovChipkaart);
+        //     odao.save(ovChipkaart);
+        //     System.out.println(pdao.findByOVChipkaart(ovChipkaart));
+        // }
 
         // Find by ID
         System.out.println("[Test] ProductDAO.findById() geeft de volgende producten:");
-        for (Product p : producten) {
-            System.out.println(pdao.findById(p.getProduct_nummer()));
+        for (Product pr : producten) {
+            System.out.println(pdao.findById(pr.getProduct_nummer()));
         }
         System.out.println(producten.size() + " producten\n");
 
     }
-    
-
 }
 

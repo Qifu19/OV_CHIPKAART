@@ -1,5 +1,6 @@
 package com.data.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Product {
@@ -7,7 +8,7 @@ public class Product {
     private String naam;
     private String beschrijving;
     private double prijs;
-    private List<OVChipkaart> ovchipkaarten;
+    private List<OVChipkaart> ovchipkaarten = new ArrayList<>();
 
     public Product(int product_nummer, String naam, String beschrijving, double prijs) {
         this.product_nummer = product_nummer;
@@ -47,7 +48,7 @@ public class Product {
     public void setOvchipkaarten(List<OVChipkaart> ovchipkaarten) {
         this.ovchipkaarten = ovchipkaarten;
     }
-    
+
     public void setProduct_nummer(int product_nummer) {
         this.product_nummer = product_nummer;
     }
@@ -65,16 +66,12 @@ public class Product {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Product: ");
-        sb.append(this.product_nummer);
-        sb.append(", ");
-        sb.append(this.naam);
-        sb.append(", ");
-        sb.append(this.beschrijving);
-        sb.append(", ");
-        sb.append(this.prijs);
-        return sb.toString();
+        return "Product: " + product_nummer + ", " + naam + ", " + beschrijving + ", " + prijs;
     }
+    // @Override
+    // public String toString() {
+    //     return "Product [product_nummer=" + product_nummer + ", naam=" + naam + ", beschrijving=" + beschrijving
+    //             + ", prijs=" + prijs + ", ovchipkaarten=" + ovchipkaarten + "]";
+    // }
 
 }

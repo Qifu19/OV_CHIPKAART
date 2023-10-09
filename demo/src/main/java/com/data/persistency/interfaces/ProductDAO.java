@@ -7,7 +7,7 @@ import com.data.domain.OVChipkaart;
 import com.data.domain.Product;
 
 public interface ProductDAO {
-    public boolean save(Product product) throws SQLException	;
+    public void save(Product product) throws SQLException	;
     public boolean update(Product product) throws SQLException;
     public boolean delete(Product product) throws SQLException;
     public Product findById(int id) throws SQLException;

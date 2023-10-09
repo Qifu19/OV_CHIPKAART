@@ -30,30 +30,36 @@ public class ProductDAOPsql implements ProductDAO{
     }
 
     @Override
-    public boolean save(Product product) throws SQLException{
+    public void save(Product product) throws SQLException {
         int product_nummer = product.getProduct_nummer();
         String naam = product.getNaam();
         String beschrijving = product.getBeschrijving();
         double prijs = product.getPrijs();
 
-        try {
-            PreparedStatement myStmt = conn.prepareStatement("UPDATE product SET naam = ?, beschrijving = ?, prijs = ? WHERE product_nummer = ?");
-            myStmt.setString(1, naam);
-            myStmt.setString(2, beschrijving);
-            myStmt.setDouble(3, prijs);
-            myStmt.setInt(4, product_nummer);
-            myStmt.executeUpdate();
-            myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
+        
+        PreparedStatement myStmt = conn.prepareStatement("UPDATE product SET naam = ?, beschrijving = ?, prijs = ? WHERE product_nummer = ?");
+        myStmt.setString(1, naam);
+        myStmt.setString(2, beschrijving);
+        myStmt.setDouble(3, prijs);
+        myStmt.setInt(4, product_nummer);
+        myStmt.executeUpdate();
+        myStmt.close();
+
+        for (OVChipkaart ovchipkaart : product.getOvchipkaarten()) {
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE product_nummer = ?");
+            delete.setInt(1, product_nummer);
+            delete.executeUpdate();
+            delete.close();
+            PreparedStatement myStmt2 = conn.prepareStatement("INSERT INTO ov_chipkaart_product VALUES (?, ?)");
+            myStmt2.setInt(1, ovchipkaart.getKaart_nummer());
+            myStmt2.setInt(2, product_nummer);
+            myStmt2.executeUpdate();
+            myStmt2.close();
         }
     }
 
     @Override
     public boolean update(Product product) throws SQLException{
-        try{
             PreparedStatement myStmt = conn.prepareStatement("UPDATE product SET naam = ?, beschrijving = ?, prijs = ? WHERE product_nummer = ?");
             myStmt.setString(1, product.getNaam());
             myStmt.setString(2, product.getBeschrijving());
@@ -61,26 +67,36 @@ public class ProductDAOPsql implements ProductDAO{
             myStmt.setInt(4, product.getProduct_nummer());
             myStmt.executeUpdate();
             myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
-        }
 
+            for(OVChipkaart ovchipkaart : product.getOvchipkaarten()){
+                PreparedStatement delete = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE product_nummer = ?");
+                delete.setInt(1, product.getProduct_nummer());
+                delete.executeUpdate();
+                delete.close();
+                PreparedStatement myStmt2 = conn.prepareStatement("INSERT INTO ov_chipkaart_product VALUES (?, ?)");
+                myStmt2.setInt(1, ovchipkaart.getKaart_nummer());
+                myStmt2.setInt(2, product.getProduct_nummer());
+                myStmt2.executeUpdate();
+                myStmt2.close();
+            }
+            return true;
     }
 
     @Override
     public boolean delete(Product product) throws SQLException{
-        try{
-            PreparedStatement myStmt = conn.prepareStatement("DELETE FROM product WHERE product_nummer = ?");
-            myStmt.setInt(1, product.getProduct_nummer());
-            myStmt.executeUpdate();
-            myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
+        PreparedStatement myStmt = conn.prepareStatement("DELETE FROM product WHERE product_nummer = ?");
+        myStmt.setInt(1, product.getProduct_nummer());
+        myStmt.executeUpdate();
+        myStmt.close();
+
+        for (OVChipkaart ovchipkaart : product.getOvchipkaarten()) {
+            PreparedStatement myStmt2 = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?");
+            myStmt2.setInt(1, ovchipkaart.getKaart_nummer());
+            myStmt2.setInt(2, product.getProduct_nummer());
+            myStmt2.executeUpdate();
+            myStmt2.close();
         }
+        return true;
     }
 
     @Override
@@ -98,19 +114,20 @@ public class ProductDAOPsql implements ProductDAO{
         return null;
         }
     }
-
     @Override
     public List<Product> findByOVChipkaart(OVChipkaart ovchipkaart) throws SQLException {
+        if (ovchipkaart == null) {
+            return null;
+        }
         List<Product> producten = new ArrayList<Product>();
-        PreparedStatement myStmt = conn.prepareStatement("SELECT * FROM ov_chipkaart_product WHERE kaart_nummer = ?");
+        PreparedStatement myStmt = conn.prepareStatement("SELECT * FROM product INNER JOIN ov_chipkaart_product ON product.product_nummer = ov_chipkaart_product.product_nummer WHERE ov_chipkaart_product.kaart_nummer = ?");
         myStmt.setInt(1, ovchipkaart.getKaart_nummer());
+
         try (ResultSet rs = myStmt.executeQuery()) {
             while (rs.next()) {
-                rs.getInt("product_nummer");
-                rs.getString("naam");
-                rs.getString("beschrijving");
-                rs.getDouble("prijs");
-                producten.add(new Product(rs.getInt("product_nummer"), rs.getString("naam"), rs.getString("beschrijving"), rs.getDouble("prijs")));
+                Product product = new Product(rs.getInt("product_nummer"), rs.getString("naam"), rs.getString("beschrijving"), rs.getDouble("prijs"));
+
+                producten.add(product);
             }
             return producten;
         }

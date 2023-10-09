@@ -1,6 +1,7 @@
 package com.data.domain;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OVChipkaart {
@@ -10,7 +11,7 @@ public class OVChipkaart {
     private double saldo;
     private int reiziger_id;
     private Reiziger reiziger;
-    private List<Product> producten;
+    private List<Product> producten = new ArrayList<>();
 
     public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reiziger_id) {
         this.kaart_nummer = kaart_nummer;
@@ -18,6 +19,7 @@ public class OVChipkaart {
         this.klasse = klasse;
         this.saldo = saldo;
         this.reiziger_id = reiziger_id;
+        producten = new ArrayList<>();
     }
 
     public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reiziger_id, Reiziger reiziger) {
@@ -36,7 +38,7 @@ public class OVChipkaart {
         this.saldo = saldo;
         this.reiziger_id = reiziger_id;
         this.reiziger = reiziger;
-        this.producten = producten;
+        this.producten = new ArrayList<>();
     }
 
     public List<Product> getProducten() {
@@ -95,6 +97,14 @@ public class OVChipkaart {
         this.reiziger_id = reiziger_id;
     }
 
+    // @Override
+    // public String toString() {
+    //     return "OVChipkaart [kaart_nummer=" + kaart_nummer + ", geldig_tot=" + geldig_tot + ", klasse=" + klasse
+    //             + ", saldo=" + saldo + ", reiziger_id=" + reiziger_id + ", reiziger=" + reiziger + ", producten="
+    //             + producten + "]";
+    // }
+
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Kaartnummer: " + kaart_nummer + "\n");

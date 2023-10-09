@@ -34,60 +34,43 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     }
 
     @Override
-    public boolean save(OVChipkaart ovchipkaart) {
+    public void save(OVChipkaart ovchipkaart) throws SQLException {
         int kaart_nummer = ovchipkaart.getKaart_nummer();
         Date geldig_tot = ovchipkaart.getGeldig_tot();
         int klasse = ovchipkaart.getKlasse();
         double saldo = ovchipkaart.getSaldo();
         int reiziger_id = ovchipkaart.getReiziger_id();
 
-        try {
-            PreparedStatement myStmt = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
-            myStmt.setDate(1, java.sql.Date.valueOf(geldig_tot.toString()));
-            myStmt.setInt(2, klasse);
-            myStmt.setDouble(3, saldo);
-            myStmt.setInt(4, reiziger_id);
-            myStmt.setInt(5, kaart_nummer);
-            myStmt.executeUpdate();
-            myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
-        }
+        PreparedStatement myStmt = conn.prepareStatement("INSERT INTO ov_chipkaart VALUES (?, ?, ?, ?, ?)");
+        myStmt.setInt(1, kaart_nummer);
+        myStmt.setDate(2, java.sql.Date.valueOf(geldig_tot.toString()));
+        myStmt.setInt(3, klasse);
+        myStmt.setDouble(4, saldo);
+        myStmt.setInt(5, reiziger_id);
+        myStmt.executeUpdate();
+        myStmt.close();
     }
 
     @Override
-    public boolean update(OVChipkaart ovchipkaart) {
-        try{
-            PreparedStatement myStmt = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
-            myStmt.setDate(1, java.sql.Date.valueOf(ovchipkaart.getGeldig_tot().toString()));
-            myStmt.setInt(2, ovchipkaart.getKlasse());
-            myStmt.setDouble(3, ovchipkaart.getSaldo());
-            myStmt.setInt(4, ovchipkaart.getReiziger_id());
-            myStmt.setInt(5, ovchipkaart.getKaart_nummer());
-            myStmt.executeUpdate();
-            myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
-        }
-
+    public boolean update(OVChipkaart ovchipkaart) throws SQLException{
+        PreparedStatement myStmt = conn.prepareStatement("UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?");
+        myStmt.setDate(1, java.sql.Date.valueOf(ovchipkaart.getGeldig_tot().toString()));
+        myStmt.setInt(2, ovchipkaart.getKlasse());
+        myStmt.setDouble(3, ovchipkaart.getSaldo());
+        myStmt.setInt(4, ovchipkaart.getReiziger_id());
+        myStmt.setInt(5, ovchipkaart.getKaart_nummer());
+        myStmt.executeUpdate();
+        myStmt.close();
+        return true;
     }
     
     @Override
-    public boolean delete(OVChipkaart ovchipkaart) {
-        try{
-            PreparedStatement myStmt = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE kaart_nummer = ?");
-            myStmt.setInt(1, ovchipkaart.getKaart_nummer());
-            myStmt.executeUpdate();
-            myStmt.close();
-            return true;
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-            return false;
-        }
+    public boolean delete(OVChipkaart ovchipkaart) throws SQLException{
+        PreparedStatement myStmt = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE kaart_nummer = ?");
+        myStmt.setInt(1, ovchipkaart.getKaart_nummer());
+        myStmt.executeUpdate();
+        myStmt.close();
+        return true;
     }
 
     @Override
@@ -131,16 +114,26 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 ovchipkaart.setReiziger(rdao.findById(result.getInt("reiziger_id")));
                 ovchipkaarten.add(ovchipkaart);
             }
-        } catch (SQLException e) {
-            System.err.println("SQLExeption: " + e.getMessage());
-        }
         return ovchipkaarten;
+        }
     }
 
     @Override
-    public List<OVChipkaart> findByProduct(Product product) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByProduct'");
+    public List<OVChipkaart> findByProduct(Product product) throws SQLException {
+        if (product == null) {
+            return null;
+        }
+        List<OVChipkaart> ovchipkaarten = new ArrayList<OVChipkaart>();
+        PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM ov_chipkaart_product WHERE product_nummer = ?");
+        preparedStatement.setInt(1, product.getProduct_nummer());
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                OVChipkaart ovchipkaart = findById(resultSet.getInt("kaart_nummer"));
+                ovchipkaarten.add(ovchipkaart);
+            }
+            return ovchipkaarten;
+        }
     }
 
 }
